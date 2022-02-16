@@ -8,6 +8,7 @@ let body = document.querySelector('body');
 let score = document.getElementById('score');
 let message = document.getElementById('message');
 let highScore = document.getElementById('high-score');
+let number = document.getElementById('number');
 
 const randomNumberGenerator = () => {
   return Math.floor(Math.random() * 20) + 1;
@@ -61,47 +62,59 @@ const setBGColor = gameStatus => {
       body.style.backgroundColor = 'grey';
   }
 };
-const toggleElement = elem => {
-  elem.disabled ? (elem.disabled = false) : (elem.disabled = true);
+const disableElem = elem => {
+  elem.disabled = true;
 };
 let correctAnswer = randomNumberGenerator();
 console.log(correctAnswer);
 
 btnCheck.addEventListener('click', function () {
   const value = currGuess.value;
-  if (value > 20 || value < 1) {
-    setMessage('out-of-bounds');
-  } else if (value == correctAnswer && score > 1) {
-    if (score.innerHTML > highScore.innerHTML) setHighScore(score.innerHTML); // works
-    setBGColor('correct'); // works
-    setMessage('correct'); // works
-    toggleElement(btnCheck); // works
-    toggleElement(currGuess); // works
-  } else if (score.innerHTML > 1) {
-    if (value == '') {
-      setMessage();
-      setBGColor();
-    } else if (value > correctAnswer) {
-      setMessage('too-high');
-      setBGColor('incorrect');
+  const currScore = score.innerHTML;
+  if (currScore > 1) {
+    if (value > 20 || (value < 1 && value != '')) {
+      setMessage('out-of-bounds');
+      currScore--;
+    } else if (value == correctAnswer) {
+      // CORRECT ANSWER
+      if (currScore > highScore.innerHTML) setHighScore(currScore); // works
+      setBGColor('correct'); // works
+      setMessage('correct'); // works
+      disableElem(btnCheck); // works
+      disableElem(currGuess); // works
+      number.innerHTML = correctAnswer;
+      number.style.color = 'green';
     } else {
-      setMessage('too-low');
-      setBGColor('incorrect');
+      if (value == '') {
+        setMessage();
+        setBGColor();
+      } else if (value > correctAnswer) {
+        setMessage('too-high');
+        setBGColor('incorrect');
+      } else {
+        setMessage('too-low');
+        setBGColor('incorrect');
+      }
+      number.innerHTML = '!';
+      number.style.color = 'red';
+      score.innerHTML--; // works
     }
-    score.innerHTML--; // works
   } else {
     setMessage('lost');
     setBGColor('lost');
+    if (score.innerHTML > 0) score.innerHTML--;
+    number.innerHTML = '☠';
   }
 });
 
 btnAgain.addEventListener('click', function () {
   correctAnswer = randomNumberGenerator();
-  setBGColor('reset'); // works
+  setBGColor('reset');
   setMessage('reset');
-  score.innerHTML = 20; // works
+  score.innerHTML = 20;
   currGuess.value = '';
-  btnCheck.disabled = false; // works
-  currGuess.disabled = false; // works
+  btnCheck.disabled = false;
+  currGuess.disabled = false;
+
   console.log(correctAnswer);
 });
