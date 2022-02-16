@@ -115,6 +115,7 @@ btnAgain.addEventListener('click', function () {
   currGuess.value = '';
   btnCheck.disabled = false;
   currGuess.disabled = false;
-
+  number.style.color = 'black';
+  number.innerHTML = '?';
   console.log(correctAnswer);
 });
