@@ -112,7 +112,9 @@ const displayMovements = function (movements, def = true, isSorted = false) {
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}</div>
+        <div class="movements__value">${mov < 0 ? '-' : ''}$${Math.abs(
+      mov
+    ).toLocaleString()}</div>
       </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -122,7 +124,7 @@ const displayMovements = function (movements, def = true, isSorted = false) {
 const displayBalance = function (acc) {
   const balance = calcBalance(acc.movements);
   acc.balance = balance;
-  labelBalance.textContent = `${balance}`;
+  labelBalance.textContent = `$${balance.toLocaleString()}`;
 };
 
 const calcDisplaySummary = function (acc) {
@@ -131,9 +133,9 @@ const calcDisplaySummary = function (acc) {
   const out = calcOut(acc.movements);
   const interest = calcInterest(acc); //Need full account deets because of interesRate + movements;
 
-  labelSumIn.textContent = `${income}`;
-  labelSumOut.textContent = `${Math.abs(out)}`;
-  labelSumInterest.textContent = `${interest}`;
+  labelSumIn.textContent = `$${income.toLocaleString()}`;
+  labelSumOut.textContent = `$${Math.abs(out).toLocaleString()}`;
+  labelSumInterest.textContent = `${interest}(${acc.interestRate.toLocaleString()}%)`;
 };
 const updateUi = function (acc) {
   inputLoginUsername.value = '';
@@ -152,20 +154,22 @@ let currentAccount;
 //Logging in
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
-  currentAccount = accounts.find(
-    acc => acc.username === inputLoginUsername.value
-  );
-  if (currentAccount?.pin == Number(inputLoginPin.value)) {
-    // console.log('hello');
-    labelWelcome.textContent = `Welcome back, ${
-      currentAccount.owner.split(' ')[0]
-    }`;
-    containerApp.style.opacity = 100;
+  if (!currentAccount || inputLoginUsername != currentAccount.username) {
+    currentAccount = accounts.find(
+      acc => acc.username === inputLoginUsername.value
+    );
+    if (currentAccount?.pin == Number(inputLoginPin.value)) {
+      // console.log('hello');
+      labelWelcome.textContent = `Welcome back, ${
+        currentAccount.owner.split(' ')[0]
+      }`;
+      containerApp.style.opacity = 100;
 
-    //Clear fields
+      //Clear fields
 
-    updateUi(currentAccount);
-  }
+      updateUi(currentAccount);
+    }
+  } else containerMovements.innerHTML = '';
 });
 //Transfering
 btnTransfer.addEventListener('click', function (e) {
