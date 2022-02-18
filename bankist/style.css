@@ -78,7 +78,9 @@ nav {
 .login__btn:hover,
 .login__btn:focus,
 .btn--sort:hover,
-.btn--sort:focus {
+.btn--sort:focus,
+.btn--reset:hover,
+.btn--reset:focus {
   outline: none;
   color: #777;
 }
@@ -197,7 +199,8 @@ nav {
   color: #f5465d;
 }
 
-.btn--sort {
+.btn--sort,
+.btn--reset {
   margin-left: auto;
   border: none;
   background: none;

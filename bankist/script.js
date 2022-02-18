@@ -49,17 +49,18 @@ const containerMovements = document.querySelector('.movements');
 
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
-// const btnLoan = document.querySelector('.form__btn--loan');
-// const btnClose = document.querySelector('.form__btn--close');
-// const btnSort = document.querySelector('.btn--sort');
+const btnLoan = document.querySelector('.form__btn--loan');
+const btnClose = document.querySelector('.form__btn--close');
+const btnSort = document.querySelector('.btn--sort');
+const btnReset = document.querySelector('.btn--reset');
 
 const inputLoginUsername = document.querySelector('.login__input--user');
 const inputLoginPin = document.querySelector('.login__input--pin');
 const inputTransferTo = document.querySelector('.form__input--to');
 const inputTransferAmount = document.querySelector('.form__input--amount');
-// const inputLoanAmount = document.querySelector('.form__input--loan-amount');
-// const inputCloseUsername = document.querySelector('.form__input--user');
-// const inputClosePin = document.querySelector('.form__input--pin');
+const inputLoanAmount = document.querySelector('.form__input--loan-amount');
+const inputCloseUsername = document.querySelector('.form__input--user');
+const inputClosePin = document.querySelector('.form__input--pin');
 
 //Creating User Accounts
 let createUserName = accounts => {
@@ -92,9 +93,18 @@ const calcInterest = function (acc) {
     .filter((int, i, arr) => int >= 1)
     .reduce((acc, int) => acc + int, 0);
 };
-const displayMovements = function (movements) {
+const displayMovements = function (movements, def = true, isSorted = false) {
   containerMovements.innerHTML = '';
-  movements.forEach(function (mov, i) {
+
+  let movs = movements;
+
+  if (!def) {
+    movs = isSorted
+      ? movements.slice().sort((a, b) => a - b)
+      : movements.slice().sort((a, b) => b - a);
+  }
+
+  movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     let html = `
@@ -126,6 +136,12 @@ const calcDisplaySummary = function (acc) {
   labelSumInterest.textContent = `${interest}`;
 };
 const updateUi = function (acc) {
+  inputLoginUsername.value = '';
+  inputLoginPin.value = '';
+  inputTransferAmount.value = '';
+  inputTransferTo.value = '';
+  inputLoanAmount.value = '';
+  inputLoginPin.blur();
   displayMovements(acc.movements);
   displayBalance(acc);
   calcDisplaySummary(acc);
@@ -147,16 +163,13 @@ btnLogin.addEventListener('click', function (e) {
     containerApp.style.opacity = 100;
 
     //Clear fields
-    inputLoginUsername.textContent = '';
-    inputLoginPin.textContent = '';
-    inputLoginPin.blur();
 
     updateUi(currentAccount);
   }
 });
 //Transfering
 btnTransfer.addEventListener('click', function (e) {
-  e.defaultPrevented();
+  e.preventDefault();
   const amount = Number(inputTransferAmount.value);
   const recieverAccount = accounts.find(
     acc => acc.username === inputTransferTo.value
@@ -174,8 +187,47 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
-//Updating UI;
+//Loan
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
 
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+    updateUi(currentAccount);
+  }
+});
+//Delete Account
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (
+    currentAccount.username === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+
+    accounts.splice(index, 1);
+
+    updateUi();
+    containerApp.style.opacity = 0;
+  }
+});
+//Sort
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, false, !sorted);
+  sorted = !sorted;
+  btnSort.textContent = sorted ? `⬆ Sort` : `⬇ Sort`;
+});
+
+btnReset.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements);
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
