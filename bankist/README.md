@@ -2,6 +2,13 @@
 
 ## A view on bankist user portal
 
+Some functionality:
+ -> User login
+ -> Delete account
+ -> Loan
+ -> Transfer
+ -> Sort
+ 
 ![image](https://user-images.githubusercontent.com/18336854/154623255-0c1a6fbc-2f5b-41b8-a01a-f8b16fdaf997.png)
 
 ![image](https://user-images.githubusercontent.com/18336854/154623320-8c48ea23-5612-4f3f-b523-689a148c27c9.png)
